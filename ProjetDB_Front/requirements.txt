@@ -1,0 +1,10 @@
+# Interface Utilisateur
+streamlit>=1.40.0
+pandas>=2.2.0
+
+# Communication avec l'API FastAPI
+requests>=2.31.0
+
+# Visualisation (Optionnel, si vous voulez des graphiques avancés)
+matplotlib>=3.8.2
+seaborn>=0.13.1

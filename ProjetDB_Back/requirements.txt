@@ -1,0 +1,17 @@
+# Framework API et Serveur
+fastapi==0.109.0
+uvicorn==0.27.0
+pydantic==2.6.1
+
+# Recommandation et Data Science
+scikit-surprise==1.1.4
+pandas==2.2.0
+numpy==1.26.3
+
+# Base de données et Communications
+pymongo[srv]==4.6.1
+requests==2.31.0
+
+# Visualisation (Optionnel pour l'API, utile pour le debug)
+matplotlib==3.8.2
+seaborn==0.13.1
