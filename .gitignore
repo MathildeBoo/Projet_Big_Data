@@ -1,0 +1,19 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+
+# Environnements virtuels
+.venv/
+venv/
+
+# Configs locales
+.python-version
+
+# Outils
+.env
+*.log
+
+# VSCode
+.vscode/
+
+
