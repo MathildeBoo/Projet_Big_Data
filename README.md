@@ -37,3 +37,11 @@ python scripts/train.py
 ```bash
 python scripts/evaluate.py
 ```
+- Lancer l'api dans le dossier ProjetDB_Back:
+  ```bash
+   python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+  ```
+- Lancer l'application :
+  ```bash
+   streamlit run ProjetDB_Front/app.py
+  ```
