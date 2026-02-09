@@ -14,7 +14,7 @@ Projet Big Data — projet de master (M2) centré sur l'analyse de données et l
 ```bash
 python -m venv venv
 source venv/bin/activate
-pip install -r requirements_scripts.txt
+pip install -r requirements.txt
 ```
 
 Ou avec conda :
