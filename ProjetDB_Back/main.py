@@ -31,6 +31,16 @@ async def lifespan(app: FastAPI):
     
     # 1. Chargement ML
     try:
+        MODEL_URL = os.getenv("MODEL_URL")
+
+        # Télécharger le modèle si absent
+        if MODEL_URL and not os.path.exists(MODEL_PATH):
+            print("Téléchargement du modèle...")
+            r = requests.get(MODEL_URL)
+            with open(MODEL_PATH, "wb") as f:
+                f.write(r.content)
+            print("Modèle téléchargé.")
+
         if os.path.exists(MODEL_PATH):
             _, loaded_algo = dump.load(MODEL_PATH)
             print(" Modèle NMF chargé.")
