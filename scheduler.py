@@ -22,7 +22,6 @@ def job_daily_update():
         
         # 3. Analyse Kafka -> MongoDB (Mise à jour Dashboard)
         print("   3. Analyse & Tendances...")
-        # Le consumer a un timeout de 20s configuré, donc il s'arrêtera tout seul
         subprocess.run(["python", SCRIPT_CONSUMER], check=True)
         
         print(" [DAILY] Mise à jour terminée !")
@@ -36,17 +35,14 @@ def job_weekly_training():
         subprocess.run(["python", SCRIPT_ML], check=True)
         print(" [WEEKLY] Nouveau modèle 'github_nmf_model.pkl' généré.")
         
-        # Optionnel : Redémarrer l'API pour charger le nouveau modèle
-        # Si vous utilisez Docker, on peut faire un os.system("docker restart api_container")
+       
     except Exception as e:
         print(f" [WEEKLY] Erreur : {e}")
 
 # --- PLANIFICATION ---
 
-# 1. Tous les jours à 06:00 du matin
 schedule.every().saturday.at("02:00").do(job_daily_update)
 
-# 2. Tous les deux mois à 02:00 du matin
 schedule.every(60).days.at("02:00").do(job_weekly_training)
 
 print(" Scheduler démarré. En attente des tâches...")
@@ -55,4 +51,4 @@ print(" Scheduler démarré. En attente des tâches...")
 
 while True:
     schedule.run_pending()
-    time.sleep(60) # Vérifie chaque minute
+    time.sleep(60) 

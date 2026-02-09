@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 import plotly.express as px
 from pymongo import MongoClient
 
@@ -32,10 +33,10 @@ def load_data():
 dict_languages, dict_topics, total_users, total_repos = load_data()
 
 # --- HEADER & KPI ---
-st.title("📊 GitHub Repositories Analytics Board")
+st.title(" GitHub Repositories Analytics Board")
 
 if not dict_languages:
-    st.error("⚠️ Aucune donnée d'analyse trouvée. Lancez le consumer Kafka d'abord.")
+    st.error(" Aucune donnée d'analyse trouvée. Lancez le consumer Kafka d'abord.")
     st.stop()
 
 # KPIs
@@ -114,12 +115,12 @@ results = sorted(results, key=lambda x: x['stars'], reverse=True)
 
 # --- AFFICHAGE ---
 if results:
-    st.success(f"✅ {len(results)} repositories recommandés.")
+    st.success(f" {len(results)} repositories recommandés.")
 
     # Graphique dynamique de la sélection
     df_results = pd.DataFrame(results).head(10)
     if not df_results.empty:
-        st.subheader(f"📊 Top Résultats : {selected_lang} / {selected_topic}")
+        st.subheader(f" Top Résultats : {selected_lang} / {selected_topic}")
         fig_sel = px.bar(
             df_results, x='repo_name', y='stars', 
             color='stars', labels={'repo_name': 'Dépôt', 'stars': 'Étoiles'},
@@ -130,11 +131,11 @@ if results:
     # Liste détaillée
     st.subheader("Détails")
     for repo in results:
-        with st.expander(f"⭐ {repo['stars']} - {repo['repo_name']} ({repo.get('language')})"):
+        with st.expander(f" {repo['stars']} - {repo['repo_name']} ({repo.get('language')})"):
             st.write(f"**Description:** {repo.get('description', 'Aucune description')}")
-            st.markdown(f"🔗 [Voir sur GitHub]({repo['url']})")
+            st.markdown(f" [Voir sur GitHub]({repo['url']})")
 
 elif selected_lang == "Tout" and selected_topic == "Tout":
-    st.info("👈 Utilisez les filtres pour commencer.")
+    st.info(" Utilisez les filtres pour commencer.")
 else:
     st.warning(f"Aucun repository trouvé pour le topic '{selected_topic}' écrit en '{selected_lang}'.")
