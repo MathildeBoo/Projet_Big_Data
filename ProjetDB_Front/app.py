@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 #  Configuration
 load_dotenv(override=True)
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
+API_URL = st.secrets["API_URL"]
 
 st.set_page_config(page_title="GitHub Matcher", page_icon="🚀", layout="wide")
 
