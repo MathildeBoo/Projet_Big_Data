@@ -1,9 +1,11 @@
 import json
+import os
 import datetime
 import pandas as pd
 from kafka import KafkaConsumer
 from pymongo import MongoClient
-
+from dotenv import load_dotenv
+load_dotenv() 
 # --- CONFIGURATION ---
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = "githubAPI"
@@ -11,7 +13,7 @@ COLLECTION_ANALYTICS = "analytics_results"
 KAFKA_TOPIC = 'github_repos_stream'
 KAFKA_BOOTSTRAP_SERVER = ['localhost:9092']
 
-# 🚫 LISTE DES TOPICS À BANNIR
+# LISTE DES TOPICS À BANNIR
 BLACKLIST_TOPICS = [
     "awesome", "awesome-list", "list", "resources", "free", 
     "learning", "tutorial", "collection", "books", "cheat-sheet", 
@@ -20,18 +22,18 @@ BLACKLIST_TOPICS = [
 ]
 
 def process_and_save():
-    print("🔌 Connexion à MongoDB...")
+    print(" Connexion à MongoDB...")
     try:
         client = MongoClient(MONGO_URI)
         db = client[DB_NAME]
         analytics_col = db[COLLECTION_ANALYTICS]
-        print("✅ Connexion MongoDB réussie.")
+        print(" Connexion MongoDB réussie.")
     except Exception as e:
-        print(f"❌ Erreur de connexion MongoDB: {e}")
+        print(f" Erreur de connexion MongoDB: {e}")
         return
 
     # Configuration du Consumer
-    print("⏳ Connexion à Kafka (cela peut prendre quelques secondes)...")
+    print(" Connexion à Kafka (cela peut prendre quelques secondes)...")
     consumer = KafkaConsumer(
         KAFKA_TOPIC,
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVER,
@@ -40,12 +42,11 @@ def process_and_save():
         # IMPORTANT : Je change le group_id pour forcer Kafka à tout renvoyer depuis le début
         group_id='analytics_group_debug_v5', 
         value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-        # IMPORTANT : Timeout augmenté à 20 secondes pour éviter les coupures si ton PC ralentit
         consumer_timeout_ms=20000 
     )
 
     data_list = []
-    print("📥 En attente de messages Kafka (Timeout: 20s)...")
+    print(" En attente de messages Kafka (Timeout: 20s)...")
 
     count = 0
     for message in consumer:
@@ -57,7 +58,7 @@ def process_and_save():
             'repo_name': repo.get('full_name'),
             'url': repo_url,
             'description': repo.get('description'),
-            'language': repo.get('language'), # GitHub renvoie souvent "TypeScript" (CamelCase)
+            'language': repo.get('language'),
             'topics': repo.get('topics') if repo.get('topics') else [],
             'stars': repo.get('stars', 0)
         }
@@ -68,22 +69,20 @@ def process_and_save():
             print(f"   -> {count} repos traités...")
 
     if not data_list:
-        print("❌ Aucune donnée reçue. Kafka est vide ou le Producer n'a pas tourné.")
+        print(" Aucune donnée reçue. Kafka est vide ou le Producer n'a pas tourné.")
         return
 
     # --- ANALYSE ET FILTRAGE ---
     df = pd.DataFrame(data_list)
-    print(f"📊 Analyse de {len(df)} repos au total.")
+    print(f" Analyse de {len(df)} repos au total.")
     
     # --- DEBUG : VÉRIFICATION SPÉCIFIQUE TYPESCRIPT ---
-    # Cela va t'afficher dans le terminal combien de TS il a trouvé VRAIMENT
     ts_count = df[df['language'] == 'TypeScript'].shape[0]
-    print(f"🔎 DEBUG: J'ai trouvé {ts_count} repositories identifiés comme 'TypeScript' dans les données brutes.")
-    # --------------------------------------------------
+    print(f" DEBUG: J'ai trouvé {ts_count} repositories identifiés comme 'TypeScript' dans les données brutes.")
 
     def get_top_10_by_group(dataframe, group_col):
         sorted_df = dataframe.sort_values('stars', ascending=False)
-        # MODIFICATION : On garde le Top 10
+        # On garde le Top 10
         top_10 = sorted_df.groupby(group_col).head(10)
         
         lookup_dict = {}
@@ -126,9 +125,9 @@ def process_and_save():
             {"$set": stats_document},
             upsert=True
         )
-        print("✅ Données mises à jour et sauvegardées avec succès !")
+        print(" Données mises à jour et sauvegardées avec succès !")
     except Exception as e:
-        print(f"❌ Erreur lors de la sauvegarde : {e}")
+        print(f" Erreur lors de la sauvegarde : {e}")
 
 if __name__ == "__main__":
     process_and_save()

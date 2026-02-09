@@ -1,16 +1,18 @@
 import json
+import os
 from kafka import KafkaProducer
 from pymongo import MongoClient
-from bson import json_util # Pour gérer les ObjectId de Mongo
-
-# 1. Connexion à MongoDB (Modifie l'URI avec le tien)
+from bson import json_util 
+from dotenv import load_dotenv
+load_dotenv() 
+# 1. Connexion à MongoDB
 client = MongoClient(os.getenv("MONGO_URI"))
 db = client["githubAPI"] # Ton nom de BDD
 collection_repos = db["repos"]
 
 # 2. Configuration du Producer Kafka
 producer = KafkaProducer(
-    bootstrap_servers=['localhost:9092'], # Adresse de ton Kafka
+    bootstrap_servers=['localhost:9092'], 
     value_serializer=lambda x: json.dumps(x, default=json_util.default).encode('utf-8')
 )
 
