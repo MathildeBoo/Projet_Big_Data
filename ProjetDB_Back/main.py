@@ -155,6 +155,9 @@ async def recommend_user(github_user: str, token: str = None):
 
     except Exception:
         return []
+@app.get("/")
+def root():
+    return {"message": "API GitHub RecSys en ligne "}
 
 if __name__ == "__main__":
     import uvicorn
